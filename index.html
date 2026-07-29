@@ -378,6 +378,77 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
   font-size:12.5px; opacity:0; pointer-events:none; transition:all 0.25s ease; z-index:150;
 }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+/* ---------- ripple / feedback ---------- */
+.sfx-host{position:relative; overflow:hidden;}
+.ripple-fx{
+  position:absolute; border-radius:50%; pointer-events:none;
+  animation: ripple-pop 0.6s ease-out forwards;
+}
+@keyframes ripple-pop{
+  0%{ opacity:0.55; transform:scale(0.25); }
+  100%{ opacity:0; transform:scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .ripple-fx{animation-duration:0.01s;}
+}
+.play-btn.is-playing{ box-shadow:0 0 0 4px rgba(255,61,138,0.18), 0 8px 22px -6px rgba(255,61,138,0.55); }
+
+/* ---------- settings ---------- */
+.settings-btn{
+  display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:9px;
+  font-size:12.5px; color:var(--text-dim); border:1px solid var(--line);
+}
+.settings-btn:hover{color:var(--text); border-color:var(--text-dim);}
+.settings-btn svg{width:14px; height:14px;}
+.switch-row{display:flex; align-items:center; justify-content:space-between; padding:4px 0;}
+.switch-row .lbl{font-size:13px;}
+.switch-row .sub{font-size:11px; color:var(--text-dim); margin-top:2px;}
+.switch{
+  width:42px; height:24px; border-radius:20px; background:var(--bg-panel-2); border:1px solid var(--line);
+  position:relative; flex:none; transition:background 0.2s;
+}
+.switch .knob{
+  position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--text-dim);
+  transition:all 0.2s;
+}
+.switch.on{background:rgba(255,61,138,0.35); border-color:var(--magenta);}
+.switch.on .knob{left:20px; background:var(--magenta);}
+.hint-box{
+  font-size:11.5px; color:var(--text-dim); line-height:1.6; background:var(--bg-panel-2);
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:6px;
+}
+.hint-box a{color:var(--cyan);}
+
+/* ---------- discover / search youtube ---------- */
+.discover-bar{display:none; margin-bottom:18px;}
+.discover-bar.active{display:block;}
+.discover-search{
+  display:flex; gap:8px; margin-bottom:10px;
+}
+.discover-search input{
+  flex:1; background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
+  padding:11px 14px; border-radius:10px; font-size:13.5px;
+}
+.discover-search button{
+  background:linear-gradient(135deg, var(--cyan), #1fa88f); color:#0c1512; font-weight:700;
+  padding:0 18px; border-radius:10px; font-size:13px;
+}
+.discover-status{font-size:12.5px; color:var(--text-dim); margin-bottom:10px; min-height:16px;}
+.discover-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px;
+}
+.discover-card{
+  cursor:pointer; border:1px solid var(--line); border-radius:12px; padding:8px; background:var(--bg-panel);
+  transition:border-color 0.15s, transform 0.15s;
+}
+.discover-card:hover{border-color:var(--magenta); transform:translateY(-2px);}
+.discover-card img{width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:8px; margin-bottom:8px; background:var(--bg-panel-2);}
+.discover-card .t{font-size:12.5px; font-weight:600; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;}
+.discover-card .a{font-size:11px; color:var(--text-dim); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.discover-card .add-pill{
+  margin-top:8px; font-size:10.5px; color:var(--cyan); font-family:'Space Mono',monospace; display:flex; align-items:center; gap:5px;
+}
 </style>
 </head>
 <body>
@@ -398,6 +469,10 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         Biblioteca
       </button>
+      <button class="nav-item" data-view="discover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Descubrir
+      </button>
       <button class="nav-item" data-view="liked">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
         Me gusta
@@ -413,6 +488,10 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
       </button>
     </div>
 
+    <button class="settings-btn" id="openSettings" style="margin-top:auto;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ajustes y sonido
+    </button>
     <button class="add-song-btn" id="openAddSong">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
       Agregar canción
@@ -474,12 +553,22 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
       </div>
     </div>
 
+    <!-- DISCOVER (buscar en todo YouTube) -->
+    <div class="discover-bar" id="discoverBar">
+      <div class="discover-search">
+        <input type="text" id="discoverInput" placeholder="Buscá cualquier canción, artista o álbum en YouTube…">
+        <button id="discoverSearchBtn">Buscar</button>
+      </div>
+      <div class="discover-status" id="discoverStatus"></div>
+      <div class="discover-grid" id="discoverGrid"></div>
+    </div>
+
     <!-- RECOMMENDATIONS -->
-    <div class="section-title">Para vos</div>
+    <div class="section-title" id="recoSectionTitle">Para vos</div>
     <div id="recoWrap"></div>
 
     <!-- LIBRARY LIST -->
-    <div class="section-title"><span id="listTitle">Tu biblioteca</span></div>
+    <div class="section-title" id="librarySectionTitle"><span id="listTitle">Tu biblioteca</span></div>
     <div class="song-list" id="songList"></div>
   </main>
 
@@ -597,6 +686,44 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
   </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <button class="close-x" id="closeSettingsModal">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 class="display">Ajustes</h2>
+    <p class="sub">Sonido de la interfaz y acceso al catálogo completo de YouTube.</p>
+
+    <div class="switch-row">
+      <div>
+        <div class="lbl">Sonidos al tocar botones</div>
+        <div class="sub" style="margin:0;">Tonos suaves al reproducir, dar me gusta, navegar…</div>
+      </div>
+      <div class="switch" id="soundsSwitch"><div class="knob"></div></div>
+    </div>
+
+    <div class="field" style="margin-top:18px;">
+      <label>Clave de API de YouTube (para buscar en "Descubrir")</label>
+      <input type="text" id="apiKeyInput" placeholder="Pegá acá tu clave de YouTube Data API v3">
+      <div class="hint-box">
+        Es gratis y tarda 2 minutos: entrá a <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>,
+        creá un proyecto, activá "YouTube Data API v3" y generá una clave (API key) en Credenciales.
+        Se guarda solo en este navegador — nunca se envía a ningún lado más que a Google.
+      </div>
+    </div>
+
+    <div class="hint-box" style="margin-top:14px;">
+      Tus playlists, "me gusta" y biblioteca se guardan automáticamente en este navegador. Si abrís el sitio
+      desde otro dispositivo o navegador, vas a empezar de cero ahí.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="saveSettingsBtn" style="flex:1;">Listo</button>
+    </div>
+  </div>
+</div>
+
 <div class="playlist-menu" id="playlistMenu"></div>
 <div class="toast" id="toast"></div>
 <div id="ytHost" class="hidden-yt"></div>
@@ -619,7 +746,7 @@ const SEED_SONGS = [
 let state = {
   library: [],      // {id, videoId, title, artist, thumb, tags, liked, playCount, addedAt}
   playlists: [],     // {id, name, songIds:[]}
-  settings: {displayMode:"cover", volume:70, shuffle:false, repeat:"off"},
+  settings: {displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:""},
   history: []        // song ids, most recent first
 };
 
@@ -639,18 +766,86 @@ const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
 
-/* ============ PERSISTENCE ============ */
+/* ============ SOUND ENGINE (tonos suaves generados, escala pentatónica) ============ */
+let audioCtx = null;
+function ensureAudioCtx(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+  return audioCtx;
+}
+function playTone(freqs, dur=0.35, vol=0.05, type='sine'){
+  if(!state.settings.soundsOn) return;
+  const ctx = ensureAudioCtx(); if(!ctx) return;
+  const list = Array.isArray(freqs) ? freqs : [freqs];
+  list.forEach((f, i)=>{
+    const t0 = ctx.currentTime + i*0.06;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type; osc.frequency.value = f;
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(vol, t0+0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(t0); osc.stop(t0+dur+0.02);
+  });
+}
+// escala pentatónica suave (C D E G A) en dos octavas
+const PENT = {C4:261.6,D4:293.7,E4:329.6,G4:392.0,A4:440.0,C5:523.3,D5:587.3,E5:659.3,G5:784.0,A5:880.0};
+const sfx = {
+  nav:      ()=>playTone([PENT.E4], 0.25, 0.04, 'sine'),
+  click:    ()=>playTone([PENT.G4], 0.2, 0.045, 'sine'),
+  play:     ()=>playTone([PENT.C4, PENT.G4], 0.3, 0.05, 'triangle'),
+  pause:    ()=>playTone([PENT.G4, PENT.C4], 0.28, 0.04, 'triangle'),
+  next:     ()=>playTone([PENT.D4, PENT.A4], 0.22, 0.045, 'sine'),
+  prev:     ()=>playTone([PENT.A4, PENT.D4], 0.22, 0.045, 'sine'),
+  like:     ()=>playTone([PENT.E5, PENT.A5], 0.35, 0.05, 'sine'),
+  unlike:   ()=>playTone([PENT.A4, PENT.E4], 0.3, 0.035, 'sine'),
+  add:      ()=>playTone([PENT.C5, PENT.E5, PENT.G5], 0.4, 0.045, 'sine'),
+  toggleOn: ()=>playTone([PENT.C5, PENT.G5], 0.22, 0.045, 'triangle'),
+  toggleOff:()=>playTone([PENT.G4, PENT.D4], 0.22, 0.04, 'triangle'),
+  error:    ()=>playTone([PENT.D4, PENT.C4], 0.3, 0.04, 'sine'),
+};
+
+/* ============ VISUAL FEEDBACK (ripple de color al tocar) ============ */
+function ripple(el, evt, colorVar){
+  if(!el) return;
+  el.classList.add('sfx-host');
+  const rect = el.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple-fx';
+  const size = Math.max(rect.width, rect.height) * 1.8;
+  const x = (evt && evt.clientX!=null) ? evt.clientX - rect.left : rect.width/2;
+  const y = (evt && evt.clientY!=null) ? evt.clientY - rect.top : rect.height/2;
+  r.style.width = r.style.height = size+'px';
+  r.style.left = (x - size/2)+'px';
+  r.style.top = (y - size/2)+'px';
+  r.style.background = `radial-gradient(circle, var(${colorVar||'--magenta'}) 0%, transparent 70%)`;
+  el.appendChild(r);
+  setTimeout(()=>r.remove(), 650);
+}
+function feedback(el, evt, kind, colorVar){
+  ripple(el, evt, colorVar);
+  if(sfx[kind]) sfx[kind]();
+}
+
+/* ============ PERSISTENCE (localStorage — vive en este navegador/dispositivo) ============ */
+const STORAGE_KEY = "vinilo-app-data-v1";
+let storageAvailable = true;
 async function loadState(){
   try{
-    const res = await window.storage.get("music-app-data", false);
-    if(res && res.value){
-      const parsed = JSON.parse(res.value);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
       state = Object.assign(state, parsed);
+      state.settings = Object.assign({displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:""}, state.settings||{});
     } else {
       seedLibrary();
-      await persist();
+      persist();
     }
   }catch(e){
+    storageAvailable = false;
     seedLibrary();
   }
 }
@@ -663,12 +858,10 @@ function seedLibrary(){
 }
 function persist(){
   clearTimeout(saveTimer);
-  return new Promise(resolve=>{
-    saveTimer = setTimeout(async ()=>{
-      try{ await window.storage.set("music-app-data", JSON.stringify(state), false); }catch(e){ /* best effort */ }
-      resolve();
-    }, 250);
-  });
+  saveTimer = setTimeout(()=>{
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch(e){ storageAvailable = false; }
+  }, 200);
 }
 
 /* ============ YOUTUBE ============ */
@@ -678,15 +871,35 @@ function loadYouTubeAPI(){
   document.body.appendChild(tag);
 }
 window.onYouTubeIframeAPIReady = function(){
+  const playerVars = { playsinline:1, controls:0, modestbranding:1, rel:0 };
+  if(location.protocol === 'http:' || location.protocol === 'https:'){
+    playerVars.origin = location.origin;
+  }
   ytPlayer = new YT.Player('ytHost', {
     height:'220', width:'220', videoId:'',
-    playerVars:{ playsinline:1, controls:0, modestbranding:1, rel:0 },
+    playerVars,
     events:{
       onReady: ()=>{ ytReady = true; ytPlayer.setVolume(state.settings.volume); if(pendingVideoIdForPlayer){ ytPlayer.cueVideoById(pendingVideoIdForPlayer); pendingVideoIdForPlayer=null; } },
-      onStateChange: onPlayerStateChange
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError
     }
   });
 };
+const YT_ERROR_MESSAGES = {
+  2: 'El link no es válido.',
+  5: 'Este tema no se puede reproducir en este reproductor.',
+  100: 'Este video no existe o fue eliminado.',
+  101: 'El dueño de este video no permite reproducirlo fuera de YouTube.',
+  150: 'El dueño de este video no permite reproducirlo fuera de YouTube.',
+  153: 'El dueño de este video no permite reproducirlo fuera de YouTube.'
+};
+function onPlayerError(e){
+  const song = getSongById(currentQueue[currentIndex]);
+  const msg = YT_ERROR_MESSAGES[e.data] || 'No se pudo reproducir este tema.';
+  showToast(`${song ? '"'+song.title+'": ' : ''}${msg} Pasando al siguiente…`);
+  setPlayIcon(false); stopViz(); setVinylSpin(false);
+  setTimeout(()=>{ if(currentQueue.length>1){ playNext(true); } }, 1600);
+}
 function onPlayerStateChange(e){
   if(e.data === YT.PlayerState.PLAYING){
     setPlayIcon(true);
@@ -757,6 +970,7 @@ function setPlayIcon(playing){
   icon.innerHTML = playing
     ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
     : '<path d="M8 5v14l11-7z"/>';
+  document.getElementById('playBtn').classList.toggle('is-playing', playing);
 }
 function playNext(userTriggered){
   if(currentQueue.length===0) return;
@@ -1019,6 +1233,75 @@ function renderRecommendations(){
     </div>`).join('')}</div>`;
 }
 
+/* ============ DISCOVER (buscar en todo YouTube) ============ */
+let discoverResults = [];
+let discoverBusy = false;
+async function searchYouTube(query){
+  const statusEl = document.getElementById('discoverStatus');
+  const gridEl = document.getElementById('discoverGrid');
+  if(!query){ return; }
+  const key = (state.settings.youtubeApiKey||'').trim();
+  if(!key){
+    statusEl.innerHTML = 'Todavía no cargaste una clave de API de YouTube. Abrí <strong>Ajustes</strong> en la barra lateral para agregar una (es gratis).';
+    gridEl.innerHTML = '';
+    return;
+  }
+  if(discoverBusy) return;
+  discoverBusy = true;
+  statusEl.textContent = 'Buscando en YouTube…';
+  gridEl.innerHTML = '';
+  try{
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=24&videoCategoryId=10&q=${encodeURIComponent(query)}&key=${encodeURIComponent(key)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!res.ok){
+      const reason = data && data.error && data.error.message ? data.error.message : 'Error desconocido.';
+      statusEl.textContent = `No se pudo buscar: ${reason}`;
+      discoverBusy = false;
+      return;
+    }
+    discoverResults = (data.items||[]).map(it=>({
+      videoId: it.id.videoId,
+      title: it.snippet.title,
+      artist: it.snippet.channelTitle,
+      thumb: (it.snippet.thumbnails.medium || it.snippet.thumbnails.default).url
+    })).filter(r=>r.videoId);
+    statusEl.textContent = discoverResults.length ? `${discoverResults.length} resultados para "${query}"` : `Sin resultados para "${query}".`;
+    renderDiscoverGrid();
+  }catch(e){
+    statusEl.textContent = 'No se pudo conectar con YouTube. Revisá tu conexión.';
+  }
+  discoverBusy = false;
+}
+function renderDiscoverGrid(){
+  const gridEl = document.getElementById('discoverGrid');
+  gridEl.innerHTML = discoverResults.map(r=>`
+    <div class="discover-card sfx-host" data-video-id="${r.videoId}">
+      <img src="${r.thumb}" alt="" loading="lazy">
+      <div class="t">${escapeHtml(r.title)}</div>
+      <div class="a">${escapeHtml(r.artist)}</div>
+      <div class="add-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar y reproducir
+      </div>
+    </div>`).join('');
+}
+function addDiscoverResultAndPlay(videoId, evt, cardEl){
+  const r = discoverResults.find(x=>x.videoId===videoId);
+  if(!r) return;
+  feedback(cardEl, evt, 'add', '--cyan');
+  let song = state.library.find(s=>s.videoId===videoId);
+  if(!song){
+    song = { id: uid(), videoId: r.videoId, title: r.title, artist: r.artist, thumb: r.thumb, tags:[], liked:false, playCount:0, addedAt: Date.now() };
+    state.library.unshift(song);
+    persist();
+    showToast('Agregada a tu biblioteca.');
+  }
+  playSong(song.id, false);
+  currentQueue = [song.id]; currentIndex = 0;
+  renderQueue();
+}
+
 /* ============ ADD SONG MODAL ============ */
 function extractVideoId(url){
   url = url.trim();
@@ -1101,6 +1384,7 @@ function confirmAddSong(){
   };
   state.library.unshift(song);
   persist();
+  sfx.add();
   closeAddModal();
   renderLibraryList();
   renderRecommendations();
@@ -1121,6 +1405,7 @@ function confirmPlaylist(){
   state.playlists.push(pl);
   pendingPlaylistSongId = null;
   persist();
+  sfx.add();
   closePlaylistModal();
   renderPlaylistsSidebar();
   showToast(`Playlist "${name}" creada.`);
@@ -1149,31 +1434,48 @@ function showToast(msg){
   showToast._tm = setTimeout(()=>t.classList.remove('show'), 2200);
 }
 
+function updateViewVisibility(){
+  const isDiscover = view.kind === 'discover';
+  document.getElementById('discoverBar').classList.toggle('active', isDiscover);
+  document.getElementById('recoSectionTitle').style.display = isDiscover ? 'none' : '';
+  document.getElementById('recoWrap').style.display = isDiscover ? 'none' : '';
+  document.getElementById('librarySectionTitle').style.display = isDiscover ? 'none' : '';
+  document.getElementById('songList').style.display = isDiscover ? 'none' : '';
+  const sw = document.getElementById('searchInput').closest('.search-wrap');
+  sw.style.display = isDiscover ? 'none' : '';
+  document.getElementById('viewTitle').style.display = isDiscover ? 'none' : '';
+}
+
 function bindEvents(){
   // nav
-  $$('.nav-item').forEach(btn=>btn.addEventListener('click', ()=>{
+  $$('.nav-item').forEach(btn=>btn.addEventListener('click', (e)=>{
+    feedback(btn, e, 'nav', '--cyan');
     $$('.nav-item').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     view = {kind: btn.dataset.view, playlistId:null};
     renderPlaylistsSidebar();
     renderLibraryList();
+    updateViewVisibility();
+    if(view.kind==='discover'){ setTimeout(()=>document.getElementById('discoverInput').focus(), 80); }
   }));
 
   document.getElementById('playlistsList').addEventListener('click', e=>{
     const row = e.target.closest('.playlist-row'); if(!row) return;
+    feedback(row, e, 'nav', '--magenta');
     $$('.nav-item').forEach(b=>b.classList.remove('active'));
     view = {kind:'playlist', playlistId: row.dataset.id};
     renderPlaylistsSidebar();
     renderLibraryList();
+    updateViewVisibility();
   });
 
-  document.getElementById('newPlaylistBtn').addEventListener('click', ()=>{ pendingPlaylistSongId=null; openPlaylistModal(); });
+  document.getElementById('newPlaylistBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'click', '--magenta'); pendingPlaylistSongId=null; openPlaylistModal(); });
   document.getElementById('closePlaylistModal').addEventListener('click', closePlaylistModal);
   document.getElementById('cancelPlaylist').addEventListener('click', closePlaylistModal);
   document.getElementById('confirmPlaylist').addEventListener('click', confirmPlaylist);
   document.getElementById('playlistNameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') confirmPlaylist(); });
 
-  document.getElementById('openAddSong').addEventListener('click', openAddModal);
+  document.getElementById('openAddSong').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'click', '--magenta'); openAddModal(); });
   document.getElementById('closeAddModal').addEventListener('click', closeAddModal);
   document.getElementById('cancelAddSong').addEventListener('click', closeAddModal);
   document.getElementById('confirmAddSong').addEventListener('click', confirmAddSong);
@@ -1205,20 +1507,58 @@ function bindEvents(){
     if(likeBtn){
       const s = getSongById(likeBtn.dataset.id);
       s.liked = !s.liked; persist();
+      feedback(likeBtn, e, s.liked ? 'like' : 'unlike', '--magenta');
       renderLibraryList(); renderRecommendations();
       if(currentQueue[currentIndex]===s.id) renderNowPlaying(s);
       return;
     }
     if(addBtn){
+      feedback(addBtn, e, 'click', '--cyan');
       openPlaylistMenu(addBtn, addBtn.dataset.id);
       return;
     }
-    if(row){ playSong(row.dataset.id); }
+    if(row){ feedback(row, e, 'click', '--cyan'); playSong(row.dataset.id); }
   });
 
   document.getElementById('recoWrap').addEventListener('click', e=>{
     const card = e.target.closest('.reco-card'); if(!card) return;
+    feedback(card, e, 'add', '--amber');
     playSong(card.dataset.id);
+  });
+
+  // discover
+  document.getElementById('discoverSearchBtn').addEventListener('click', e=>{
+    feedback(e.currentTarget, e, 'click', '--cyan');
+    searchYouTube(document.getElementById('discoverInput').value.trim());
+  });
+  document.getElementById('discoverInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ searchYouTube(e.target.value.trim()); }
+  });
+  document.getElementById('discoverGrid').addEventListener('click', e=>{
+    const card = e.target.closest('.discover-card'); if(!card) return;
+    addDiscoverResultAndPlay(card.dataset.videoId, e, card);
+  });
+
+  // settings modal
+  document.getElementById('openSettings').addEventListener('click', e=>{
+    feedback(e.currentTarget, e, 'nav', '--cyan');
+    document.getElementById('apiKeyInput').value = state.settings.youtubeApiKey || '';
+    document.getElementById('soundsSwitch').classList.toggle('on', state.settings.soundsOn);
+    document.getElementById('settingsModal').classList.add('open');
+  });
+  document.getElementById('closeSettingsModal').addEventListener('click', ()=>document.getElementById('settingsModal').classList.remove('open'));
+  document.getElementById('saveSettingsBtn').addEventListener('click', e=>{
+    state.settings.youtubeApiKey = document.getElementById('apiKeyInput').value.trim();
+    persist();
+    feedback(e.currentTarget, e, 'toggleOn', '--cyan');
+    document.getElementById('settingsModal').classList.remove('open');
+    showToast('Ajustes guardados en este navegador.');
+  });
+  document.getElementById('soundsSwitch').addEventListener('click', e=>{
+    state.settings.soundsOn = !state.settings.soundsOn;
+    document.getElementById('soundsSwitch').classList.toggle('on', state.settings.soundsOn);
+    persist();
+    if(state.settings.soundsOn) sfx.toggleOn(); // suena solo si se acaba de activar
   });
 
   document.getElementById('queueList').addEventListener('click', e=>{
@@ -1251,22 +1591,26 @@ function bindEvents(){
   });
 
   // display modes
-  $$('.mode-btn').forEach(btn=>btn.addEventListener('click', ()=>{
+  $$('.mode-btn').forEach(btn=>btn.addEventListener('click', e=>{
     if(btn.disabled) return;
+    feedback(btn, e, 'nav', '--amber');
     setDisplayMode(btn.dataset.mode);
   }));
 
   // player bar
-  document.getElementById('playBtn').addEventListener('click', ()=>{
+  document.getElementById('playBtn').addEventListener('click', e=>{
+    const willPlay = !(ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState()===YT.PlayerState.PLAYING);
+    feedback(e.currentTarget, e, willPlay ? 'play' : 'pause', '--magenta');
     if(currentIndex===-1 && state.library.length>0){ playSong(getViewSongs()[0] ? getViewSongs()[0].id : state.library[0].id); return; }
     togglePlayPause();
   });
-  document.getElementById('nextBtn').addEventListener('click', ()=>playNext(true));
-  document.getElementById('prevBtn').addEventListener('click', playPrev);
+  document.getElementById('nextBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'next', '--cyan'); playNext(true); });
+  document.getElementById('prevBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'prev', '--cyan'); playPrev(); });
 
-  document.getElementById('shuffleBtn').addEventListener('click', ()=>{
+  document.getElementById('shuffleBtn').addEventListener('click', e=>{
     state.settings.shuffle = !state.settings.shuffle;
     document.getElementById('shuffleBtn').classList.toggle('active-toggle', state.settings.shuffle);
+    feedback(e.currentTarget, e, state.settings.shuffle ? 'toggleOn':'toggleOff', '--cyan');
     if(state.settings.shuffle && currentIndex>-1){
       currentQueue = shuffleArray(currentQueue, currentQueue[currentIndex]);
       currentIndex = 0;
@@ -1275,21 +1619,23 @@ function bindEvents(){
     persist();
     showToast(state.settings.shuffle ? 'Aleatorio activado.' : 'Aleatorio desactivado.');
   });
-  document.getElementById('repeatBtn').addEventListener('click', ()=>{
+  document.getElementById('repeatBtn').addEventListener('click', e=>{
     const order = ['off','all','one'];
     const next = order[(order.indexOf(state.settings.repeat)+1)%order.length];
     state.settings.repeat = next;
     const btn = document.getElementById('repeatBtn');
     btn.classList.toggle('active-toggle', next!=='off');
     btn.title = next==='off' ? 'Repetir' : next==='all' ? 'Repetir todo' : 'Repetir una';
+    feedback(btn, e, next==='off' ? 'toggleOff':'toggleOn', '--cyan');
     persist();
     showToast({off:'Repetir desactivado', all:'Repetir toda la cola', one:'Repetir esta canción'}[next]);
   });
 
-  document.getElementById('pbLike').addEventListener('click', ()=>{
+  document.getElementById('pbLike').addEventListener('click', e=>{
     if(currentIndex===-1) return;
     const s = getSongById(currentQueue[currentIndex]);
     s.liked = !s.liked; persist();
+    feedback(e.currentTarget, e, s.liked ? 'like':'unlike', '--magenta');
     renderNowPlaying(s); renderLibraryList(); renderRecommendations();
   });
 
@@ -1330,6 +1676,7 @@ async function init(){
   renderRecommendations();
   renderQueue();
   renderHistory();
+  updateViewVisibility();
   setDisplayMode(state.settings.displayMode || 'cover');
   loadYouTubeAPI();
 }
