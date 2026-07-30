@@ -216,6 +216,13 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
 .mode-btn:hover{color:var(--text);}
 .mode-btn:disabled{opacity:0.35; cursor:not-allowed;}
 
+.rhythm-launch-btn{
+  margin-top:14px; display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg, var(--amber), #b9812a); color:#1c1305; font-weight:700; font-size:12.5px;
+  padding:9px 16px; border-radius:10px; box-shadow:0 8px 20px -8px rgba(232,176,75,0.55);
+}
+.rhythm-launch-btn:hover{filter:brightness(1.06);}
+
 /* recommendations */
 .section-title{
   font-size:12px; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-dim);
@@ -449,6 +456,123 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
 .discover-card .add-pill{
   margin-top:8px; font-size:10.5px; color:var(--cyan); font-family:'Space Mono',monospace; display:flex; align-items:center; gap:5px;
 }
+
+/* ---------- rhythm game (4K) ---------- */
+.rhythm-overlay{
+  position:fixed; inset:0; background:#08060b; z-index:300; display:none; flex-direction:column;
+}
+.rhythm-overlay.open{display:flex;}
+.rhythm-top{
+  display:flex; align-items:center; justify-content:space-between; padding:14px 20px;
+  border-bottom:1px solid var(--line); flex-wrap:wrap; gap:10px;
+}
+.rhythm-song-info{display:flex; align-items:center; gap:10px; min-width:0;}
+.rhythm-song-info img{width:36px; height:36px; border-radius:7px; object-fit:cover;}
+.rhythm-song-info .t{font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px;}
+.rhythm-song-info .a{font-size:11px; color:var(--text-dim);}
+.rhythm-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.rhythm-controls select{
+  background:var(--bg-panel-2); border:1px solid var(--line); color:var(--text); font-size:12.5px;
+  padding:7px 10px; border-radius:8px;
+}
+.tap-tempo-wrap{display:flex; align-items:center; gap:8px;}
+.tap-tempo-btn{
+  background:var(--bg-panel-2); border:1px solid var(--line); padding:7px 12px; border-radius:8px; font-size:12.5px; color:var(--text-muted);
+}
+.tap-tempo-btn:hover{color:var(--text); border-color:var(--cyan);}
+.bpm-display{font-family:'Space Mono',monospace; font-size:12px; color:var(--cyan); min-width:70px;}
+.key-config-btn{
+  background:var(--bg-panel-2); border:1px solid var(--line); padding:7px 12px; border-radius:8px; font-size:12.5px; color:var(--text-muted);
+}
+.key-config-btn:hover{color:var(--text);}
+.rhythm-close{color:var(--text-dim); padding:7px;}
+.rhythm-close:hover{color:var(--text);}
+
+.rhythm-stage{
+  flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;
+  background:
+    radial-gradient(ellipse 700px 500px at 50% 0%, rgba(255,61,138,0.10), transparent 60%),
+    #0a0710;
+}
+.rhythm-hud{
+  position:absolute; top:16px; left:50%; transform:translateX(-50%); display:flex; gap:26px; align-items:baseline;
+  font-family:'Space Mono',monospace; z-index:5; pointer-events:none;
+}
+.rhythm-hud .score{font-size:26px; color:#fff; font-weight:700;}
+.rhythm-hud .combo{font-size:15px; color:var(--amber);}
+.rhythm-hud .acc{font-size:12px; color:var(--text-dim);}
+
+.lanes{
+  position:relative; width:340px; max-width:80vw; height:78vh; max-height:640px;
+  background:rgba(255,255,255,0.02); border-left:1px solid var(--line); border-right:1px solid var(--line);
+  display:flex;
+}
+.lane{
+  flex:1; position:relative; border-right:1px solid rgba(255,255,255,0.05);
+  overflow:hidden;
+}
+.lane:last-child{border-right:none;}
+.lane-glow{
+  position:absolute; inset:0; opacity:0; transition:opacity 0.08s; pointer-events:none;
+}
+.lane-glow.on{opacity:0.55;}
+.lane1 .lane-glow{background:linear-gradient(to top, var(--magenta), transparent 70%);}
+.lane2 .lane-glow{background:linear-gradient(to top, var(--cyan), transparent 70%);}
+.lane3 .lane-glow{background:linear-gradient(to top, var(--amber), transparent 70%);}
+.lane4 .lane-glow{background:linear-gradient(to top, #b57bff, transparent 70%);}
+.hit-line{
+  position:absolute; left:0; right:0; bottom:14%; height:3px; background:rgba(255,255,255,0.5);
+  box-shadow:0 0 10px rgba(255,255,255,0.5);
+}
+.key-label{
+  position:absolute; left:0; right:0; bottom:calc(14% - 46px); text-align:center;
+  font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--text-muted);
+  border:1px solid var(--line); margin:0 6px; padding:9px 0; border-radius:8px; background:var(--bg-panel);
+}
+.note{
+  position:absolute; left:4px; right:4px; height:22px; border-radius:6px;
+  box-shadow:0 0 10px currentColor;
+}
+.lane1 .note{background:var(--magenta); color:var(--magenta);}
+.lane2 .note{background:var(--cyan); color:var(--cyan);}
+.lane3 .note{background:var(--amber); color:var(--amber);}
+.lane4 .note{background:#b57bff; color:#b57bff;}
+
+.judgement-pop{
+  position:absolute; top:38%; left:50%; transform:translate(-50%,-50%); font-family:'Space Mono',monospace;
+  font-size:22px; font-weight:700; opacity:0; z-index:6; pointer-events:none;
+}
+.judgement-pop.show{animation: judge-pop 0.5s ease-out forwards;}
+@keyframes judge-pop{
+  0%{opacity:0; transform:translate(-50%,-40%) scale(0.7);}
+  25%{opacity:1; transform:translate(-50%,-50%) scale(1.08);}
+  100%{opacity:0; transform:translate(-50%,-56%) scale(1);}
+}
+.j-perfect{color:var(--cyan);}
+.j-good{color:var(--amber);}
+.j-miss{color:var(--magenta);}
+
+.rhythm-start-card, .rhythm-end-card{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:8;
+  background:rgba(8,6,11,0.85); backdrop-filter:blur(3px);
+}
+.rhythm-card-box{
+  text-align:center; max-width:360px; padding:10px;
+}
+.rhythm-card-box h3{font-family:'Fraunces',serif; font-size:26px; margin:0 0 10px;}
+.rhythm-card-box p{color:var(--text-muted); font-size:13px; line-height:1.6; margin:0 0 20px;}
+.rhythm-grade{font-family:'Fraunces',serif; font-size:56px; margin:6px 0;}
+.rhythm-stats{display:flex; justify-content:center; gap:22px; margin:14px 0 22px; font-family:'Space Mono',monospace; font-size:12px;}
+.rhythm-stats div span{display:block; font-size:17px; color:#fff; margin-bottom:2px;}
+.rhythm-stats .p{color:var(--cyan);} .rhythm-stats .g{color:var(--amber);} .rhythm-stats .m{color:var(--magenta);}
+
+/* key rebind modal reuse .modal */
+.keybind-row{display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);}
+.keybind-row:last-child{border-bottom:none;}
+.keybind-key{
+  font-family:'Space Mono',monospace; background:var(--bg-panel-2); border:1px solid var(--line); padding:6px 14px; border-radius:8px; min-width:64px; text-align:center;
+}
+.keybind-key.listening{border-color:var(--magenta); color:var(--magenta);}
 </style>
 </head>
 <body>
@@ -550,6 +674,10 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video
           </button>
         </div>
+        <button class="rhythm-launch-btn sfx-host" id="openRhythmGame">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M4 12h4M15 11h.01M18 13h.01"/></svg>
+          Modo ritmo (4K)
+        </button>
       </div>
     </div>
 
@@ -728,6 +856,95 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
 <div class="toast" id="toast"></div>
 <div id="ytHost" class="hidden-yt"></div>
 
+<!-- RHYTHM GAME OVERLAY -->
+<div class="rhythm-overlay" id="rhythmOverlay">
+  <div class="rhythm-top">
+    <div class="rhythm-song-info">
+      <img id="rhythmCover" src="" alt="">
+      <div>
+        <div class="t" id="rhythmTitle">—</div>
+        <div class="a" id="rhythmArtist">—</div>
+      </div>
+    </div>
+    <div class="rhythm-controls">
+      <select id="difficultySelect">
+        <option value="easy">Fácil</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Difícil</option>
+        <option value="expert">Experto</option>
+      </select>
+      <div class="tap-tempo-wrap">
+        <button class="tap-tempo-btn" id="tapTempoBtn">Tap tempo</button>
+        <span class="bpm-display mono" id="bpmDisplay">sin BPM</span>
+      </div>
+      <button class="key-config-btn" id="openKeybinds">Teclas: <span id="keysPreview">D F J K</span></button>
+      <button class="btn btn-primary" id="startRhythmBtn" style="padding:9px 18px;">Empezar</button>
+    </div>
+    <button class="rhythm-close" id="closeRhythmOverlay">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="rhythm-stage">
+    <div class="rhythm-hud" id="rhythmHud" style="display:none;">
+      <div class="score" id="hudScore">0</div>
+      <div class="combo" id="hudCombo">0x combo</div>
+      <div class="acc" id="hudAcc">100.0%</div>
+    </div>
+
+    <div class="lanes" id="lanes">
+      <div class="lane lane1" data-lane="0"><div class="lane-glow"></div></div>
+      <div class="lane lane2" data-lane="1"><div class="lane-glow"></div></div>
+      <div class="lane lane3" data-lane="2"><div class="lane-glow"></div></div>
+      <div class="lane lane4" data-lane="3"><div class="lane-glow"></div></div>
+      <div class="hit-line"></div>
+      <div class="key-label" id="keyLabel0" style="left:0%; width:25%;">D</div>
+      <div class="key-label" id="keyLabel1" style="left:25%; width:25%;">F</div>
+      <div class="key-label" id="keyLabel2" style="left:50%; width:25%;">J</div>
+      <div class="key-label" id="keyLabel3" style="left:75%; width:25%;">K</div>
+      <div class="judgement-pop" id="judgementPop"></div>
+    </div>
+
+    <div class="rhythm-start-card" id="rhythmStartCard">
+      <div class="rhythm-card-box">
+        <h3 class="display">Modo ritmo — 4K</h3>
+        <p id="startCardMsg">Elegí la dificultad, configurá tus teclas, y si es la primera vez con este tema, tocá "Tap tempo" al ritmo de la música unas 6-8 veces para calcular el BPM. Después dale a "Empezar".</p>
+      </div>
+    </div>
+
+    <div class="rhythm-end-card" id="rhythmEndCard" style="display:none;">
+      <div class="rhythm-card-box">
+        <div class="rhythm-grade" id="endGrade">S</div>
+        <div class="rhythm-stats">
+          <div class="p"><span id="endPerfect">0</span>Perfect</div>
+          <div class="g"><span id="endGood">0</span>Good</div>
+          <div class="m"><span id="endMiss">0</span>Miss</div>
+        </div>
+        <p>Puntaje: <strong id="endScore">0</strong> · Precisión: <strong id="endAcc">0%</strong></p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="rhythmExitBtn">Salir</button>
+          <button class="btn btn-primary" id="rhythmRetryBtn">Jugar de nuevo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KEYBINDS MODAL -->
+<div class="modal-overlay" id="keybindModal">
+  <div class="modal">
+    <button class="close-x" id="closeKeybindModal">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 class="display">Configurar teclas</h2>
+    <p class="sub">Hacé clic en una tecla y después presioná la que quieras usar para ese carril.</p>
+    <div id="keybindRows"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="closeKeybindModalBtn" style="flex:1;">Listo</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
 "use strict";
@@ -746,7 +963,7 @@ const SEED_SONGS = [
 let state = {
   library: [],      // {id, videoId, title, artist, thumb, tags, liked, playCount, addedAt}
   playlists: [],     // {id, name, songIds:[]}
-  settings: {displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:""},
+  settings: {displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:"", rhythmKeys:["KeyD","KeyF","KeyJ","KeyK"], rhythmDifficulty:"normal"},
   history: []        // song ids, most recent first
 };
 
@@ -839,7 +1056,7 @@ async function loadState(){
     if(raw){
       const parsed = JSON.parse(raw);
       state = Object.assign(state, parsed);
-      state.settings = Object.assign({displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:""}, state.settings||{});
+      state.settings = Object.assign({displayMode:"cover", volume:70, shuffle:false, repeat:"off", soundsOn:true, youtubeApiKey:"", rhythmKeys:["KeyD","KeyF","KeyJ","KeyK"], rhythmDifficulty:"normal"}, state.settings||{});
     } else {
       seedLibrary();
       persist();
@@ -1302,6 +1519,310 @@ function addDiscoverResultAndPlay(videoId, evt, cardEl){
   renderQueue();
 }
 
+/* ============ RHYTHM GAME (4K, estilo osu!mania) ============ */
+const RHYTHM_LANE_KEYS_DEFAULT = ['KeyD','KeyF','KeyJ','KeyK'];
+const KEY_LABELS = {
+  KeyD:'D', KeyF:'F', KeyJ:'J', KeyK:'K', KeyA:'A', KeyS:'S', KeyL:'L',
+  KeyZ:'Z', KeyX:'X', KeyC:'C', KeyV:'V', KeyN:'N', KeyM:'M',
+  Space:'ESPACIO', ArrowLeft:'←', ArrowRight:'→', ArrowUp:'↑', ArrowDown:'↓'
+};
+function keyLabel(code){ return KEY_LABELS[code] || code.replace('Key','').replace('Digit',''); }
+
+const DIFFICULTY_CFG = {
+  easy:   { notesPerBeat: 1,   chordChance: 0.00, fallSeconds: 1.6, tolGood: 0.20, tolPerfect: 0.11 },
+  normal: { notesPerBeat: 1,   chordChance: 0.06, fallSeconds: 1.25, tolGood: 0.16, tolPerfect: 0.09 },
+  hard:   { notesPerBeat: 2,   chordChance: 0.12, fallSeconds: 1.0, tolGood: 0.13, tolPerfect: 0.075 },
+  expert: { notesPerBeat: 2,   chordChance: 0.22, fallSeconds: 0.82, tolGood: 0.11, tolPerfect: 0.06 },
+};
+
+let rg = {
+  active:false, chart:[], startAt:0, songId:null, lookahead:1.25,
+  score:0, combo:0, maxCombo:0, perfect:0, good:0, miss:0, totalJudged:0,
+  raf:null, noteEls: new Map(), listeningForKeyIndex:null, pendingBinding:false
+};
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed>>>15, 1 | seed);
+    t = t + Math.imul(t ^ t>>>7, 61 | t) ^ t;
+    return ((t ^ t>>>14) >>> 0) / 4294967296;
+  };
+}
+function hashStr(str){ let h=0; for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i))|0; } return h; }
+
+function generateChart(song, bpm, difficulty, duration){
+  const cfg = DIFFICULTY_CFG[difficulty] || DIFFICULTY_CFG.normal;
+  const rand = mulberry32(hashStr(song.id + '|' + bpm + '|' + difficulty));
+  const beat = 60 / bpm;
+  const step = beat / cfg.notesPerBeat;
+  const notes = [];
+  let lastLane = -1, repeatCount = 0;
+  const leadIn = beat * 3;
+  const end = Math.max(duration - beat*2, leadIn + step);
+  for(let t = leadIn; t < end; t += step){
+    let lane = Math.floor(rand()*4);
+    if(lane === lastLane){ repeatCount++; if(repeatCount>=2){ lane = (lane + 1 + Math.floor(rand()*3)) % 4; repeatCount=0; } }
+    else { repeatCount = 0; }
+    lastLane = lane;
+    const lanes = [lane];
+    if(rand() < cfg.chordChance){
+      let l2 = Math.floor(rand()*4);
+      if(l2!==lane) lanes.push(l2);
+    }
+    lanes.forEach(l => notes.push({ time:t, lane:l, judged:false, el:null }));
+  }
+  notes.sort((a,b)=>a.time-b.time);
+  return notes;
+}
+
+function openRhythmGame(){
+  if(currentIndex===-1){ showToast('Elegí y reproducí una canción primero.'); return; }
+  const song = getSongById(currentQueue[currentIndex]);
+  if(!song) return;
+  document.getElementById('rhythmOverlay').classList.add('open');
+  document.getElementById('rhythmCover').src = song.thumb;
+  document.getElementById('rhythmTitle').textContent = song.title;
+  document.getElementById('rhythmArtist').textContent = song.artist;
+  document.getElementById('difficultySelect').value = state.settings.rhythmDifficulty || 'normal';
+  updateBpmDisplay(song);
+  updateKeysPreview();
+  showStartCard('Elegí la dificultad, configurá tus teclas, y si es la primera vez con este tema, tocá "Tap tempo" al ritmo de la música unas 6-8 veces para calcular el BPM. Después dale a "Empezar".');
+  document.getElementById('rhythmHud').style.display = 'none';
+  clearNotesDOM();
+}
+function updateBpmDisplay(song){
+  const el = document.getElementById('bpmDisplay');
+  el.textContent = song.bpm ? Math.round(song.bpm)+' BPM' : 'sin BPM';
+}
+function updateKeysPreview(){
+  const keys = state.settings.rhythmKeys || RHYTHM_LANE_KEYS_DEFAULT;
+  document.getElementById('keysPreview').textContent = keys.map(keyLabel).join(' ');
+  keys.forEach((k,i)=>{ const lbl = document.getElementById('keyLabel'+i); if(lbl) lbl.textContent = keyLabel(k); });
+}
+function showStartCard(msg){
+  document.getElementById('startCardMsg').textContent = msg;
+  document.getElementById('rhythmStartCard').style.display = 'flex';
+  document.getElementById('rhythmEndCard').style.display = 'none';
+}
+
+let tapTimes = [];
+function handleTapTempo(){
+  const now = performance.now();
+  if(tapTimes.length && now - tapTimes[tapTimes.length-1] > 2200){ tapTimes = []; }
+  tapTimes.push(now);
+  if(tapTimes.length > 8) tapTimes.shift();
+  if(tapTimes.length >= 3){
+    const intervals = [];
+    for(let i=1;i<tapTimes.length;i++) intervals.push(tapTimes[i]-tapTimes[i-1]);
+    const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    const bpm = Math.round(60000/avg);
+    if(bpm>=40 && bpm<=240){
+      document.getElementById('bpmDisplay').textContent = bpm+' BPM';
+      pendingBpm = bpm;
+    }
+  }
+  sfx.click();
+}
+let pendingBpm = null;
+
+function startRhythmRound(){
+  const song = getSongById(currentQueue[currentIndex]);
+  if(!song) return;
+  let bpm = pendingBpm || song.bpm;
+  if(!bpm){ showToast('Tocá "Tap tempo" al ritmo de la música primero (al menos 3 veces).'); return; }
+  song.bpm = bpm; pendingBpm = null; persist();
+  updateBpmDisplay(song);
+
+  const difficulty = document.getElementById('difficultySelect').value;
+  state.settings.rhythmDifficulty = difficulty; persist();
+  const cfg = DIFFICULTY_CFG[difficulty];
+
+  if(!ytReady){ showToast('El reproductor todavía está cargando, esperá un segundo.'); return; }
+  ytPlayer.seekTo(0, true);
+  ytPlayer.playVideo();
+
+  const duration = ytPlayer.getDuration() || 180;
+  rg.chart = generateChart(song, bpm, difficulty, duration);
+  rg.songId = song.id;
+  rg.lookahead = cfg.fallSeconds;
+  rg.score=0; rg.combo=0; rg.maxCombo=0; rg.perfect=0; rg.good=0; rg.miss=0; rg.totalJudged=0;
+  rg.active = true;
+
+  document.getElementById('rhythmStartCard').style.display = 'none';
+  document.getElementById('rhythmEndCard').style.display = 'none';
+  document.getElementById('rhythmHud').style.display = 'flex';
+  clearNotesDOM();
+  updateHud();
+  cancelAnimationFrame(rg.raf);
+  rgLoop();
+}
+
+function clearNotesDOM(){
+  document.querySelectorAll('.lane').forEach(l=>{
+    Array.from(l.querySelectorAll('.note')).forEach(n=>n.remove());
+  });
+  rg.noteEls.clear();
+}
+
+function rgLoop(){
+  if(!rg.active) return;
+  const cur = ytReady ? ytPlayer.getCurrentTime() : 0;
+  const stage = document.querySelector('.lanes');
+  const stageH = stage.clientHeight;
+  const hitLineY = stageH * 0.86;
+
+  rg.chart.forEach(note=>{
+    const dt = note.time - cur;
+    if(dt > rg.lookahead + 0.3 || note.judged) {
+      if(note.el){ note.el.remove(); note.el = null; }
+      return;
+    }
+    if(dt < -0.3){
+      if(!note.judged){ judgeMiss(note); }
+      return;
+    }
+    const frac = 1 - (dt / rg.lookahead);
+    const y = frac * hitLineY - 11;
+    if(!note.el){
+      const laneEl = document.querySelector(`.lane[data-lane="${note.lane}"]`);
+      const div = document.createElement('div');
+      div.className = 'note';
+      laneEl.appendChild(div);
+      note.el = div;
+    }
+    note.el.style.top = y+'px';
+  });
+
+  const isEnded = ytReady && ytPlayer.getPlayerState() === YT.PlayerState.ENDED;
+  const allDone = rg.chart.length>0 && rg.chart.every(n=>n.judged);
+  if(isEnded || (allDone && cur > rg.chart[rg.chart.length-1].time + 1)){
+    endRhythmRound();
+    return;
+  }
+  rg.raf = requestAnimationFrame(rgLoop);
+}
+
+function judgeMiss(note){
+  note.judged = true;
+  rg.miss++; rg.combo = 0; rg.totalJudged++;
+  showJudgement('MISS','j-miss');
+  if(note.el){ note.el.remove(); note.el=null; }
+  updateHud();
+}
+function findClosestUnjudgedNote(lane, cur, tol){
+  let best=null, bestDiff=Infinity;
+  for(const n of rg.chart){
+    if(n.lane!==lane || n.judged) continue;
+    const diff = Math.abs(n.time - cur);
+    if(diff < bestDiff){ bestDiff=diff; best=n; }
+  }
+  if(best && bestDiff<=tol) return best;
+  return null;
+}
+function handleLaneHit(lane){
+  if(!rg.active) return;
+  flashLane(lane);
+  const cur = ytPlayer.getCurrentTime();
+  const difficulty = document.getElementById('difficultySelect').value;
+  const cfg = DIFFICULTY_CFG[difficulty];
+  const note = findClosestUnjudgedNote(lane, cur, cfg.tolGood);
+  if(!note){ return; } // toque sin nota cerca: no penaliza, solo no suma
+  note.judged = true;
+  const diff = Math.abs(note.time - cur);
+  rg.totalJudged++;
+  if(diff <= cfg.tolPerfect){
+    rg.perfect++; rg.score += 300 + Math.min(rg.combo,50)*2; rg.combo++;
+    showJudgement('PERFECT','j-perfect');
+    playTone([700+lane*60], 0.12, 0.035, 'sine');
+  } else {
+    rg.good++; rg.score += 100; rg.combo++;
+    showJudgement('GOOD','j-good');
+    playTone([520+lane*40], 0.12, 0.03, 'sine');
+  }
+  rg.maxCombo = Math.max(rg.maxCombo, rg.combo);
+  if(note.el){ note.el.remove(); note.el=null; }
+  updateHud();
+}
+function flashLane(lane){
+  const laneEl = document.querySelector(`.lane[data-lane="${lane}"] .lane-glow`);
+  if(!laneEl) return;
+  laneEl.classList.add('on');
+  setTimeout(()=>laneEl.classList.remove('on'), 90);
+}
+function showJudgement(text, cls){
+  const el = document.getElementById('judgementPop');
+  el.textContent = text;
+  el.className = 'judgement-pop ' + cls;
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+function updateHud(){
+  document.getElementById('hudScore').textContent = rg.score;
+  document.getElementById('hudCombo').textContent = rg.combo+'x combo';
+  const acc = rg.totalJudged ? ((rg.perfect*100 + rg.good*50) / (rg.totalJudged*100) * 100) : 100;
+  document.getElementById('hudAcc').textContent = acc.toFixed(1)+'%';
+}
+function endRhythmRound(){
+  rg.active = false;
+  cancelAnimationFrame(rg.raf);
+  if(ytReady) ytPlayer.pauseVideo();
+  clearNotesDOM();
+  const acc = rg.totalJudged ? ((rg.perfect*100 + rg.good*50) / (rg.totalJudged*100) * 100) : 0;
+  let grade = 'D';
+  if(acc>=95) grade='S'; else if(acc>=88) grade='A'; else if(acc>=75) grade='B'; else if(acc>=60) grade='C';
+  document.getElementById('endGrade').textContent = grade;
+  document.getElementById('endPerfect').textContent = rg.perfect;
+  document.getElementById('endGood').textContent = rg.good;
+  document.getElementById('endMiss').textContent = rg.miss;
+  document.getElementById('endScore').textContent = rg.score;
+  document.getElementById('endAcc').textContent = acc.toFixed(1)+'%';
+  document.getElementById('rhythmHud').style.display = 'none';
+  document.getElementById('rhythmEndCard').style.display = 'flex';
+  sfx.add();
+}
+function closeRhythmGame(){
+  rg.active = false;
+  cancelAnimationFrame(rg.raf);
+  clearNotesDOM();
+  document.getElementById('rhythmOverlay').classList.remove('open');
+  if(ytReady) ytPlayer.pauseVideo();
+}
+
+/* keybinds */
+function renderKeybindRows(){
+  const keys = state.settings.rhythmKeys || RHYTHM_LANE_KEYS_DEFAULT.slice();
+  const wrap = document.getElementById('keybindRows');
+  wrap.innerHTML = keys.map((k,i)=>`
+    <div class="keybind-row">
+      <span>Carril ${i+1}</span>
+      <button class="keybind-key" data-lane="${i}">${keyLabel(k)}</button>
+    </div>`).join('');
+}
+function startListeningForKey(idx, btnEl){
+  rg.listeningForKeyIndex = idx;
+  btnEl.classList.add('listening');
+  btnEl.textContent = '…';
+}
+document.addEventListener('keydown', e=>{
+  if(rg.listeningForKeyIndex !== null){
+    e.preventDefault();
+    const keys = (state.settings.rhythmKeys || RHYTHM_LANE_KEYS_DEFAULT.slice()).slice();
+    keys[rg.listeningForKeyIndex] = e.code;
+    state.settings.rhythmKeys = keys;
+    persist();
+    rg.listeningForKeyIndex = null;
+    renderKeybindRows();
+    updateKeysPreview();
+    return;
+  }
+  if(rg.active){
+    const keys = state.settings.rhythmKeys || RHYTHM_LANE_KEYS_DEFAULT;
+    const lane = keys.indexOf(e.code);
+    if(lane>-1){ e.preventDefault(); handleLaneHit(lane); }
+    if(e.code==='Escape'){ closeRhythmGame(); }
+  }
+});
+
 /* ============ ADD SONG MODAL ============ */
 function extractVideoId(url){
   url = url.trim();
@@ -1637,6 +2158,25 @@ function bindEvents(){
     s.liked = !s.liked; persist();
     feedback(e.currentTarget, e, s.liked ? 'like':'unlike', '--magenta');
     renderNowPlaying(s); renderLibraryList(); renderRecommendations();
+  });
+
+  // rhythm game
+  document.getElementById('openRhythmGame').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'click', '--amber'); openRhythmGame(); });
+  document.getElementById('closeRhythmOverlay').addEventListener('click', closeRhythmGame);
+  document.getElementById('tapTempoBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'click', '--cyan'); handleTapTempo(); });
+  document.getElementById('startRhythmBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'play', '--amber'); startRhythmRound(); });
+  document.getElementById('rhythmRetryBtn').addEventListener('click', e=>{ feedback(e.currentTarget, e, 'play', '--amber'); startRhythmRound(); });
+  document.getElementById('rhythmExitBtn').addEventListener('click', closeRhythmGame);
+  document.getElementById('openKeybinds').addEventListener('click', e=>{
+    feedback(e.currentTarget, e, 'click', '--cyan');
+    renderKeybindRows();
+    document.getElementById('keybindModal').classList.add('open');
+  });
+  document.getElementById('closeKeybindModal').addEventListener('click', ()=>document.getElementById('keybindModal').classList.remove('open'));
+  document.getElementById('closeKeybindModalBtn').addEventListener('click', ()=>document.getElementById('keybindModal').classList.remove('open'));
+  document.getElementById('keybindRows').addEventListener('click', e=>{
+    const btn = e.target.closest('.keybind-key'); if(!btn) return;
+    startListeningForKey(Number(btn.dataset.lane), btn);
   });
 
   // seek
